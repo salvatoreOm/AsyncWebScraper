@@ -3,6 +3,10 @@ from rest_framework.response import Response
 from .serializers import ScrapeRequestSerializer
 from .tasks import scrape_url
 from celery.result import AsyncResult
+from django.shortcuts import render
+
+def index(request):
+    return render(request, 'index.html')
 
 @api_view(['POST'])
 def scrape(request):

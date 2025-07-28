@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Scraper</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        input { width: 100%; padding: 8px; margin-bottom: 10px; }
+        button { padding: 10px 15px; }
+        pre { background-color: #f4f4f4; padding: 10px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>URL Scraper</h1>
+        <form id="scrape-form">
+            <input type="text" id="url" name="url" placeholder="Enter URL to scrape" required>
+            <button type="submit">Scrape</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('scrape-form').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const url = document.getElementById('url').value;
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '<p>Scraping...</p>';
+
+            try {
+                const scrapeResponse = await fetch('/scrape/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ url })
+                });
+
+                if (!scrapeResponse.ok) {
+                    throw new Error('Failed to start scraping task.');
+                }
+
+                const { task_id } = await scrapeResponse.json();
+                resultDiv.innerHTML = `<p>Task started: ${task_id}</p><p>Checking for results...</p>`;
+
+                const interval = setInterval(async () => {
+                    const resultResponse = await fetch(`/results/${task_id}/`);
+                    const data = await resultResponse.json();
+                    if (data.status === 'SUCCESS' || data.status === 'FAILURE') {
+                        clearInterval(interval);
+                        resultDiv.innerHTML = `
+                            <h2>Result</h2>
+                            <p><strong>Status:</strong> ${data.status}</p>
+                            <pre>${JSON.stringify(data.result, null, 2)}</pre>
+                        `;
+                    } else {
+                        resultDiv.innerHTML = `<p>Task started: ${task_id}</p><p>Status: ${data.status}</p>`;
+                    }
+                }, 2000);
+
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html> 
