@@ -4,10 +4,12 @@ from .serializers import ScrapeRequestSerializer
 from .tasks import scrape_url
 from celery.result import AsyncResult
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
 
 def index(request):
     return render(request, 'index.html')
 
+@csrf_exempt
 @api_view(['POST'])
 def scrape(request):
     serializer = ScrapeRequestSerializer(data=request.data)
