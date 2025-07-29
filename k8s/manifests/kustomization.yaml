@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: fleek-scraper
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - redis.yaml
+  - web.yaml
+  - worker.yaml
+  - flower.yaml
+
+commonLabels:
+  app: fleek-scraper
+  version: v1.0.0
+
+images:
+  - name: fleek-scraper
+    newTag: latest 

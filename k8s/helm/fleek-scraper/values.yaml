@@ -1,0 +1,83 @@
+# Default values for fleek-scraper
+replicaCount:
+  web: 2
+  worker: 2
+  redis: 1
+  flower: 1
+
+image:
+  repository: fleek-scraper
+  pullPolicy: Always
+  tag: "latest"
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  web:
+    type: LoadBalancer
+    port: 80
+    targetPort: 8000
+  flower:
+    type: LoadBalancer
+    port: 5555
+    targetPort: 5555
+  redis:
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+
+resources:
+  web:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  worker:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi
+  redis:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  flower:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Environment variables
+env:
+  django:
+    DEBUG: "False"
+    ALLOWED_HOSTS: "*"
+  celery:
+    C_FORCE_ROOT: "1"
+  flower:
+    FLOWER_PORT: "5555"
+    FLOWER_BASIC_AUTH: "admin:password"
+
+# Redis configuration
+redis:
+  image: redis:alpine
+
+# Flower configuration  
+flower:
+  image: mher/flower:latest 

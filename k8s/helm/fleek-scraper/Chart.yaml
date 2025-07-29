@@ -1,0 +1,17 @@
+apiVersion: v2
+name: fleek-scraper
+description: A Helm chart for Fleek Web Scraper application with Django, Celery, Redis, and Flower
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - web-scraper
+  - django
+  - celery
+  - redis
+  - flower
+maintainers:
+  - name: Fleek Team
+    email: team@fleek.com
+sources:
+  - https://github.com/fleek/scraper 
