@@ -17,17 +17,21 @@ def scrape_url(self, url):
         meta = soup.find("meta", attrs={"name": "description"})
         description = meta["content"].strip() if meta else ''
         
-        # Extract and clean visible text
+        # Extract text
         visible_text = soup.get_text()
         # Clean up the text: remove excessive whitespace and newlines
-        visible_text = re.sub(r'\n\s*\n', '\n\n', visible_text)  # Replace multiple newlines with double newlines
-        visible_text = re.sub(r'[ \t]+', ' ', visible_text)  # Replace multiple spaces/tabs with single space
-        visible_text = visible_text.strip()  # Remove leading/trailing whitespace
+        visible_text = re.sub(r'\n\s*\n', '\n\n', visible_text)
+        # Replace multiple newlines with double newlines
+        visible_text = re.sub(r'[ \t]+', ' ', visible_text)  
+        # Replace multiple spaces/tabs with single space
+        visible_text = visible_text.strip()  
+        # Remove leading/trailing whitespace
         
         return {
             'title': title,
             'description': description,
-            'text': visible_text[:1000]  # Increased limit for more content
+            'text': visible_text[:2000]  
+            
         }
     except Exception as e:
         # For non-retriable errors, we can just return the error
