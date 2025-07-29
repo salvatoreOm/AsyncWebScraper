@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleek-scraper.fullname" . }}-web
+  labels:
+    {{- include "fleek-scraper.labels" . | nindent 4 }}
+    app.kubernetes.io/component: web
+spec:
+  replicas: {{ .Values.replicaCount.web }}
+  selector:
+    matchLabels:
+      {{- include "fleek-scraper.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        {{- include "fleek-scraper.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: web
+    spec:
+      containers:
+      - name: web
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["python", "scraper_project/manage.py", "runserver", "0.0.0.0:8000"]
+        ports:
+        - containerPort: {{ .Values.service.web.targetPort }}
+        envFrom:
+        - configMapRef:
+            name: {{ include "fleek-scraper.fullname" . }}-config
+        env:
+        - name: DEBUG
+          value: {{ .Values.env.django.DEBUG | quote }}
+        - name: ALLOWED_HOSTS
+          value: {{ .Values.env.django.ALLOWED_HOSTS | quote }}
+        resources:
+          {{- toYaml .Values.resources.web | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.web.targetPort }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: {{ .Values.service.web.targetPort }}
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }} 

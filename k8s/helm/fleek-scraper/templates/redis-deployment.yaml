@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fleek-scraper.fullname" . }}-redis
+  labels:
+    {{- include "fleek-scraper.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  replicas: {{ .Values.replicaCount.redis }}
+  selector:
+    matchLabels:
+      {{- include "fleek-scraper.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        {{- include "fleek-scraper.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+    spec:
+      containers:
+      - name: redis
+        image: {{ .Values.redis.image }}
+        ports:
+        - containerPort: {{ .Values.service.redis.targetPort }}
+        resources:
+          {{- toYaml .Values.resources.redis | nindent 10 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fleek-scraper.fullname" . }}-redis
+  labels:
+    {{- include "fleek-scraper.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  type: {{ .Values.service.redis.type }}
+  ports:
+  - port: {{ .Values.service.redis.port }}
+    targetPort: {{ .Values.service.redis.targetPort }}
+    protocol: TCP
+    name: redis
+  selector:
+    {{- include "fleek-scraper.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: redis 
