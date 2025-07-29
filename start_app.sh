@@ -61,11 +61,17 @@ trap cleanup EXIT INT TERM
 
 # Start Django development server in background
 echo -e "${YELLOW}🌐 Starting Django development server...${NC}"
-python manage.py runserver 127.0.0.1:8000 > /dev/null 2>&1 &
+python manage.py runserver 127.0.0.1:8000 &
 DJANGO_PID=$!
 
-# Wait a moment for Django to start
-sleep 3
+# Wait for Django to start
+echo -e "${YELLOW}   Waiting for Django to be ready...${NC}"
+for i in {1..20}; do
+    if curl -s http://127.0.0.1:8000/ > /dev/null; then
+        break
+    fi
+    sleep 0.5
+done
 
 # Check if Django started successfully
 if ! curl -s http://127.0.0.1:8000/ > /dev/null; then

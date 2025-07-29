@@ -59,3 +59,29 @@ The application consists of the following components:
         }
     }
     ```
+
+## Testing the API
+
+### Using curl
+
+1. **Submit a scraping task**:
+   ```bash
+   curl -X POST http://localhost:8000/scrape/ \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://example.com"}'
+   ```
+
+2. **Check task result**:
+   ```bash
+   curl http://localhost:8000/results/YOUR_TASK_ID/
+   ```
+
+### Using the Web Interface
+
+Navigate to `http://localhost:8000` in your browser to use the simple web interface.
+
+## Monitoring
+
+- **Flower**: Access `http://localhost:5555` to monitor Celery tasks
+- **Django Admin**: Access `http://localhost:8000/admin/` (create superuser first)
+
