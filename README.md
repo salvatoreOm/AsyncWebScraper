@@ -1,87 +1,52 @@
-# Web Scraper
+# URL Scraper
 
-This is a web scraper application built with Django, Celery, and the Django REST Framework. It provides an API to scrape a given URL and can be deployed using Docker Compose.
+A Django web scraper that extracts content from websites using Celery for background processing.
 
-## Architecture
+## Features
+- REST API for URL scraping
+- Background task processing with Celery
+- Task monitoring with Flower
+- Simple web interface
+- Dockerized setup
 
-The application consists of the following components:
+## Quick Start
 
--   **Django Web Server**: A Django application that serves the API and a simple UI.
--   **Celery Worker**: A Celery worker that processes scraping tasks in the background.
--   **Redis**: A Redis instance that serves as the message broker for Celery.
--   **Flower**: A web-based tool for monitoring Celery jobs.
-
-## Setup & Running the Application
-
-### With Docker Compose
-
-1.  **Build and Run the Containers**:
-    ```bash
-    docker-compose up --build
-    ```
-
-2.  **Access the Application**:
-    -   Web UI: `http://localhost:8000`
-    -   API: `http://localhost:8000/scrape/`
-    -   Flower: `http://localhost:5555`
-
-## API Usage
-
-### 1. Scrape a URL
-
--   **Endpoint**: `/scrape/`
--   **Method**: `POST`
--   **Payload**:
-    ```json
-    {
-        "url": "https://www.example.com"
-    }
-    ```
--   **Example Response**:
-    ```json
-    {
-        "task_id": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-    }
-    ```
-
-### 2. Get the Result
-
--   **Endpoint**: `/results/<task_id>/`
--   **Method**: `GET`
--   **Example Response**:
-    ```json
-    {
-        "status": "SUCCESS",
-        "result": {
-            "title": "Example Domain",
-            "description": "",
-            "text": "Example Domain This domain is for use in illustrative examples in documents..."
-        }
-    }
-    ```
-
-## Testing the API
-
-### Using curl
-
-1. **Submit a scraping task**:
+1. **Run with Docker Compose**:
    ```bash
-   curl -X POST http://localhost:8000/scrape/ \
-     -H "Content-Type: application/json" \
-     -d '{"url": "https://example.com"}'
+   docker-compose up --build
    ```
 
-2. **Check task result**:
-   ```bash
-   curl http://localhost:8000/results/YOUR_TASK_ID/
-   ```
+2. **Access the application**:
+   - **Web UI**: http://127.0.0.1:8000
+   - **Flower Dashboard**: http://127.0.0.1:5555
 
-### Using the Web Interface
+## Usage
 
-Navigate to `http://localhost:8000` in your browser to use the simple web interface.
+### Web Interface
+Simply go to http://127.0.0.1:8000, enter a URL, and click "Scrape".
 
-## Monitoring
+### API
+**Start scraping**:
+```bash
+curl -X POST http://127.0.0.1:8000/scrape/ \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+```
 
-- **Flower**: Access `http://localhost:5555` to monitor Celery tasks
-- **Django Admin**: Access `http://localhost:8000/admin/` (create superuser first)
+**Check results**:
+```bash
+curl http://127.0.0.1:8000/results/YOUR_TASK_ID/
+```
+
+## Services
+- **Web**: Django server (port 8000)
+- **Worker**: Celery background tasks
+- **Redis**: Message broker
+- **Flower**: Task monitoring (port 5555)
+
+## Tech Stack
+- Django + Django REST Framework
+- Celery + Redis
+- BeautifulSoup4
+- Docker + Docker Compose
 
