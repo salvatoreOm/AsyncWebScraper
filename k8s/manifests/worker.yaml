@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  labels:
+    app: worker
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: fleek-scraper:latest
+        imagePullPolicy: Always
+        command: ["celery", "-A", "scraper_project", "worker", "-l", "info"]
+        envFrom:
+        - configMapRef:
+            name: app-config
+        env:
+        - name: C_FORCE_ROOT
+          value: "1"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          exec:
+            command:
+            - celery
+            - -A
+            - scraper_project
+            - inspect
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 30 
