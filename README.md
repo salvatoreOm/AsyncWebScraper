@@ -1,6 +1,6 @@
 # URL Scraper
 
-A Django-based web scraping tool that processes requests in the background using Celery and Redis. Includes a REST API, simple UI, and supports deployment via Docker and Kubernetes.
+A Django-based web scraping tool that processes requests in the background using Celery and Redis. Includes a REST API, simple UI, and supports deployment via Docker and tried the best to do the bonus Kubernetes Part.
 
 ---
 
